@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import {useReducer} from 'react';
 
 function FilterableProductTable({ products }) {
   const [filterText, setFilterText] = useState('');
@@ -127,7 +128,50 @@ const PRODUCTS = [
 //export function App() {
 //  return <FilterableProductTable products={PRODUCTS} />;
 //}
+/*****************************/
+interface State {
+   count: number
+};
 
+type CounterAction =
+  | { type: "reset" }
+  | { type: "setCount"; value: State["count"] }
+
+const initialState: State = { count: 0 };
+
+function stateReducer(state: State, action: CounterAction): State {
+  switch (action.type) {
+    case "reset":
+      return initialState;
+    case "setCount":
+      return { ...state, count: action.value };
+    default:
+      throw new Error("Unknown action");
+  }
+}
+
+export default function App() {
+  const [state, dispatch] = useReducer(stateReducer, initialState);
+
+  const addFive = () => dispatch({ type: "setCount", value: state.count + 5 });
+  const reset = () => dispatch({ type: "reset" });
+
+  return (
+    <div>
+      <h1>Welcome to my app</h1>
+      <MyButton title="I'm a disabled button" disabled={false}/>
+      <h3>Filterable Product Table</h3>
+      <FilterableProductTable products={PRODUCTS}/>
+      <h2>Welcome to my counter</h2>
+      <p>Count: {state.count}</p>
+      <button onClick={addFive}>Add 5</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+
+
+/****************************/
 interface MyButtonProps {
   /** The text to display inside the button */
   title: string;
@@ -141,13 +185,13 @@ function MyButton({ title, disabled }: MyButtonProps) {
   );
 }
 
-export default function MyApp() {
-  return (
-    <div>
-      <h1>Welcome to my app</h1>
-      <MyButton title="I'm a disabled button" disabled={false}/>
-      <h3>Filterable Product Table</h3>
-      <FilterableProductTable products={PRODUCTS}/>
-    </div>
-  );
-}
+//export default function MyApp() {
+//  return (
+//    <div>
+//      <h1>Welcome to my app</h1>
+//      <MyButton title="I'm a disabled button" disabled={false}/>
+//      <h3>Filterable Product Table</h3>
+//      <FilterableProductTable products={PRODUCTS}/>
+//    </div>
+//  );
+//}
